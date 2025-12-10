@@ -3,13 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "homepage": "https://lt20202.github.io/Juba-app/",
-  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
