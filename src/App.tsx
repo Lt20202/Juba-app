@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { INITIAL_DATA, InspectionData, User } from './types';
 import { 
@@ -183,10 +182,19 @@ const App = () => {
   }, [currentUser]);
 
   const handleOnboardingComplete = async (updatedUser: User) => {
-      setCurrentUser(updatedUser);
-      localStorage.setItem('safetyCheck_user', JSON.stringify(updatedUser));
+      // FIXED: Added default emailNotifications value
+      const userWithDefaults = {
+          ...updatedUser,
+          preferences: {
+              emailNotifications: false, // Default value
+              ...updatedUser.preferences,
+              hasCompletedTour: true
+          }
+      };
+      setCurrentUser(userWithDefaults);
+      localStorage.setItem('safetyCheck_user', JSON.stringify(userWithDefaults));
       setShowOnboarding(false);
-      if (updatedUser.preferences?.hasCompletedTour !== true) {
+      if (userWithDefaults.preferences?.hasCompletedTour !== true) {
           setTimeout(() => setShowTour(true), 500);
       }
   };
@@ -195,7 +203,11 @@ const App = () => {
       if (!currentUser) return;
       const updatedUser = { 
           ...currentUser, 
-          preferences: { ...currentUser.preferences, hasCompletedTour: true } 
+          preferences: { 
+              emailNotifications: false, // Default value
+              ...currentUser.preferences, 
+              hasCompletedTour: true 
+          } 
       };
       setCurrentUser(updatedUser);
       localStorage.setItem('safetyCheck_user', JSON.stringify(updatedUser));
@@ -570,7 +582,8 @@ const App = () => {
       <InstallPwaPrompt />
       <SubmissionOverlay status={submissionStatus} />
       {showTour && <SystemTour onComplete={handleTourComplete} />}
-      <MaintenanceOverlay isActive={showMaintenanceOverlay} message={settings.maintenanceMessage || ''} onLogout={() => handleLogout()} />
+      {/* FIXED: Added !! to convert to boolean */}
+      <MaintenanceOverlay isActive={!!showMaintenanceOverlay} message={settings.maintenanceMessage || ''} onLogout={() => handleLogout()} />
       <NetworkStatus queueLength={offlineQueue.length} isSyncing={isSyncing} isPoorConnection={isPoorConnection} onRetry={syncOfflineQueue} />
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       

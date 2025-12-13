@@ -1,4 +1,3 @@
-
 export enum InspectionStatus {
   GOOD = 'Good',
   BAD = 'Bad',
@@ -56,11 +55,12 @@ export const INITIAL_DATA: InspectionData = {
 };
 
 export interface UserPreferences {
-    emailNotifications: boolean;
-    notifyGeneral: boolean;
-    notifyPetroleum: boolean;
-    notifyPetroleumV2: boolean;
-    notifyAcid: boolean;
+    // CHANGED: Made optional
+    emailNotifications?: boolean;
+    notifyGeneral?: boolean;
+    notifyPetroleum?: boolean;
+    notifyPetroleumV2?: boolean;
+    notifyAcid?: boolean;
     mustChangePassword?: boolean;
     isEmailVerified?: boolean;
     hasCompletedTour?: boolean;
