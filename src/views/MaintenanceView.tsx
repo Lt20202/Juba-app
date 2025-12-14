@@ -48,6 +48,7 @@ const MaintenanceView: React.FC<MaintenanceViewProps> = ({ user, appScriptUrl, s
     const handleSaveMaintenance = async () => {
         setIsSavingMaint(true);
         try {
+            // 1. Update Database
             // Re-use update_settings but only for maintenance fields
             await fetch(appScriptUrl, {
                 method: 'POST',
@@ -63,9 +64,19 @@ const MaintenanceView: React.FC<MaintenanceViewProps> = ({ user, appScriptUrl, s
                 })
             });
             
-            // Optimistic update locally
-            onSettingsUpdate({ maintenanceMode: maintMode, maintenanceMessage: maintMessage });
-            showToast("System status updated.", "success");
+            // 2. Update React State (App level)
+            const newSettings = { maintenanceMode: maintMode, maintenanceMessage: maintMessage };
+            onSettingsUpdate(newSettings);
+
+            // 3. FORCE Local Storage Update (Fixes persistence on refresh)
+            const currentStored = localStorage.getItem('safetyCheck_settings');
+            if (currentStored) {
+                const parsed = JSON.parse(currentStored);
+                const updated = { ...parsed, ...newSettings };
+                localStorage.setItem('safetyCheck_settings', JSON.stringify(updated));
+            }
+
+            showToast(maintMode ? "System Lockdown ACTIVATED" : "System Status Normal", "success");
         } catch (e) {
             showToast("Failed to update system status.", "error");
         } finally {
@@ -226,3 +237,4 @@ const MaintenanceView: React.FC<MaintenanceViewProps> = ({ user, appScriptUrl, s
 };
 
 export default MaintenanceView;
+
